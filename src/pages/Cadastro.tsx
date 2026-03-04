@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import NoiseOverlay from "@/components/NoiseOverlay";
 
-const Login = () => {
+const Cadastro = () => {
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,23 +16,37 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (nome.trim().length < 2) {
+      toast({ title: "Erro", description: "Nome deve ter pelo menos 2 caracteres.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: window.location.origin },
+      });
       if (error) throw error;
 
-      // Check if onboarding is complete
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarding_complete")
-        .eq("id", (await supabase.auth.getUser()).data.user?.id)
-        .single();
+      // Update profile with name
+      if (data.user) {
+        await supabase
+          .from("profiles")
+          .update({ nome: nome.trim() })
+          .eq("id", data.user.id);
+      }
 
-      if (profile && !profile.onboarding_complete) {
+      // If email confirmation is disabled, go straight to onboarding
+      if (data.session) {
         navigate("/onboarding");
       } else {
-        navigate("/dashboard");
+        toast({
+          title: "Conta criada!",
+          description: "Verifique seu email para confirmar e depois faça login.",
+        });
+        navigate("/login");
       }
     } catch (error: any) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
@@ -48,10 +63,24 @@ const Login = () => {
           DISTRITO 1%
         </h1>
         <p className="text-muted-foreground text-center font-mono text-xs uppercase tracking-wider mb-10">
-          Elite Performance
+          Crie sua conta
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="font-mono text-xs text-primary uppercase tracking-wider mb-1.5 block">
+              Nome
+            </label>
+            <Input
+              type="text"
+              placeholder="Seu nome"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              required
+              maxLength={100}
+              className="bg-background-secondary border-primary/15 text-foreground placeholder:text-muted-foreground focus:border-primary/40"
+            />
+          </div>
           <div>
             <label className="font-mono text-xs text-primary uppercase tracking-wider mb-1.5 block">
               Email
@@ -62,6 +91,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              maxLength={255}
               className="bg-background-secondary border-primary/15 text-foreground placeholder:text-muted-foreground focus:border-primary/40"
             />
           </div>
@@ -71,7 +101,7 @@ const Login = () => {
             </label>
             <Input
               type="password"
-              placeholder="••••••••"
+              placeholder="Mínimo 6 caracteres"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -84,14 +114,14 @@ const Login = () => {
             disabled={loading}
             className="w-full bg-primary text-primary-foreground hover:bg-primary-light font-display text-lg tracking-wider h-12"
           >
-            {loading ? "..." : "ENTRAR"}
+            {loading ? "..." : "CRIAR CONTA"}
           </Button>
         </form>
 
         <p className="text-center mt-8 text-muted-foreground text-sm">
-          Não tem conta?{" "}
-          <Link to="/cadastro" className="text-primary hover:text-primary-light transition-colors">
-            Criar conta
+          Já tem conta?{" "}
+          <Link to="/login" className="text-primary hover:text-primary-light transition-colors">
+            Entrar
           </Link>
         </p>
       </div>
@@ -99,4 +129,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Cadastro;
