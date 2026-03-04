@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_checklist: {
+        Row: {
+          completed: boolean
+          created_at: string
+          date: string
+          id: string
+          item_key: string
+          note: string | null
+          protocol: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          date?: string
+          id?: string
+          item_key: string
+          note?: string | null
+          protocol: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          date?: string
+          id?: string
+          item_key?: string
+          note?: string | null
+          protocol?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_checklist_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           cidade: string | null
