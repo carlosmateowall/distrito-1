@@ -6,6 +6,8 @@ import { useChecklistStats } from "@/hooks/useChecklistStats";
 import { Button } from "@/components/ui/button";
 import { Flame, Dumbbell, Brain, Cross, ChevronRight, Play, MapPin, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Leaderboard from "@/components/Leaderboard";
+import ProfileStats from "@/components/ProfileStats";
 
 interface Profile {
   nome: string;
@@ -227,6 +229,11 @@ const Dashboard = () => {
       </div>
 
       <ChecklistSummary />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ProfileStats />
+        <Leaderboard />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <NextEvent />

@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      badges: {
+        Row: {
+          badge_type: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_type: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_type?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_checklist: {
         Row: {
           completed: boolean
@@ -394,7 +423,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      weekly_ranking: {
+        Row: {
+          nome: string | null
+          score: number | null
+          user_id: string | null
+          week: number | null
+          year: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_checklist_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never

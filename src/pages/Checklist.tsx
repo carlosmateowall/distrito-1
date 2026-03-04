@@ -2,9 +2,12 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useConfetti } from "@/hooks/useConfetti";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Flame, PartyPopper } from "lucide-react";
+import { BadgeCelebration } from "@/components/BadgeCelebration";
+import Leaderboard from "@/components/Leaderboard";
 
 // --- Protocol definitions ---
 
@@ -79,10 +82,12 @@ const todayStr = () => new Date().toISOString().split("T")[0];
 const Checklist = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const fireConfetti = useConfetti();
   const [rows, setRows] = useState<Map<string, ChecklistRow>>(new Map());
   const [notes, setNotes] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(true);
   const [celebrating, setCelebrating] = useState(false);
+  const [newBadge, setNewBadge] = useState<string | null>(null);
 
   const completedCount = Array.from(rows.values()).filter((r) => r.completed).length;
   const allDone = completedCount === TOTAL_ITEMS;
@@ -177,7 +182,8 @@ const Checklist = () => {
     const newCount = Array.from(updated.values()).filter((r) => r.completed).length;
     if (newCount === TOTAL_ITEMS && !celebrating) {
       setCelebrating(true);
-      // Update streak
+      fireConfetti();
+      // Update streak and check badge milestones
       if (user) {
         const { data: profile } = await supabase
           .from("profiles")
@@ -192,6 +198,19 @@ const Checklist = () => {
             .from("profiles")
             .update({ streak_atual: newStreak, streak_maximo: newMax })
             .eq("id", user.id);
+
+          // Check streak milestones
+          const milestones = [7, 21, 30, 60, 100];
+          for (const m of milestones) {
+            if (newStreak === m) {
+              const badgeType = `streak_${m}`;
+              await supabase
+                .from("badges")
+                .upsert({ user_id: user.id, badge_type: badgeType }, { onConflict: "user_id,badge_type" });
+              setNewBadge(badgeType);
+              break;
+            }
+          }
         }
       }
       setTimeout(() => setCelebrating(false), 4000);
@@ -323,6 +342,12 @@ const Checklist = () => {
           </div>
         </section>
       ))}
+
+      {/* Leaderboard */}
+      <Leaderboard />
+
+      {/* Badge celebration modal */}
+      <BadgeCelebration badgeType={newBadge} onClose={() => setNewBadge(null)} />
     </div>
   );
 };
