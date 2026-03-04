@@ -11,6 +11,8 @@ import Cadastro from "@/pages/Cadastro";
 import Onboarding from "@/pages/Onboarding";
 import Dashboard from "@/pages/Dashboard";
 import Treino from "@/pages/Treino";
+import TreinoExecucao from "@/pages/TreinoExecucao";
+import TreinoHistorico from "@/pages/TreinoHistorico";
 import Dieta from "@/pages/Dieta";
 import Agenda from "@/pages/Agenda";
 import Checklist from "@/pages/Checklist";
@@ -34,6 +36,8 @@ const App = () => (
             <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/treino" element={<Treino />} />
+              <Route path="/treino/historico" element={<TreinoHistorico />} />
+              <Route path="/treino/:id" element={<TreinoExecucao />} />
               <Route path="/dieta" element={<Dieta />} />
               <Route path="/agenda" element={<Agenda />} />
               <Route path="/checklist" element={<Checklist />} />

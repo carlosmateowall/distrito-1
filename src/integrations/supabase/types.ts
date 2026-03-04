@@ -55,6 +55,88 @@ export type Database = {
           },
         ]
       }
+      exercises: {
+        Row: {
+          completed: boolean
+          id: string
+          muscle_groups: string
+          name: string
+          order_index: number
+          reps: string
+          rest_seconds: number
+          sets: number
+          weight_suggested: string | null
+          workout_id: string
+        }
+        Insert: {
+          completed?: boolean
+          id?: string
+          muscle_groups?: string
+          name: string
+          order_index?: number
+          reps?: string
+          rest_seconds?: number
+          sets?: number
+          weight_suggested?: string | null
+          workout_id: string
+        }
+        Update: {
+          completed?: boolean
+          id?: string
+          muscle_groups?: string
+          name?: string
+          order_index?: number
+          reps?: string
+          rest_seconds?: number
+          sets?: number
+          weight_suggested?: string | null
+          workout_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercises_workout_id_fkey"
+            columns: ["workout_id"]
+            isOneToOne: false
+            referencedRelation: "workouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      personal_records: {
+        Row: {
+          exercise_name: string
+          id: string
+          recorded_at: string
+          reps: number
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          exercise_name: string
+          id?: string
+          recorded_at?: string
+          reps: number
+          user_id: string
+          weight: number
+        }
+        Update: {
+          exercise_name?: string
+          id?: string
+          recorded_at?: string
+          reps?: number
+          user_id?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personal_records_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           cidade: string | null
@@ -102,6 +184,44 @@ export type Database = {
           streak_maximo?: number
         }
         Relationships: []
+      }
+      workouts: {
+        Row: {
+          created_at: string
+          day_name: string
+          day_of_week: number
+          id: string
+          status: string
+          user_id: string
+          week_number: number
+        }
+        Insert: {
+          created_at?: string
+          day_name?: string
+          day_of_week: number
+          id?: string
+          status?: string
+          user_id: string
+          week_number: number
+        }
+        Update: {
+          created_at?: string
+          day_name?: string
+          day_of_week?: number
+          id?: string
+          status?: string
+          user_id?: string
+          week_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workouts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
