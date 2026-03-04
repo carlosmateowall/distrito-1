@@ -15,6 +15,7 @@ import TreinoExecucao from "@/pages/TreinoExecucao";
 import TreinoHistorico from "@/pages/TreinoHistorico";
 import Dieta from "@/pages/Dieta";
 import Agenda from "@/pages/Agenda";
+import EventoDetalhe from "@/pages/EventoDetalhe";
 import Checklist from "@/pages/Checklist";
 import Comunidade from "@/pages/Comunidade";
 import NotFound from "@/pages/NotFound";
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/treino/:id" element={<TreinoExecucao />} />
               <Route path="/dieta" element={<Dieta />} />
               <Route path="/agenda" element={<Agenda />} />
+              <Route path="/agenda/:id" element={<EventoDetalhe />} />
               <Route path="/checklist" element={<Checklist />} />
               <Route path="/comunidade" element={<Comunidade />} />
             </Route>
