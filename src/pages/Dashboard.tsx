@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useChecklistStats } from "@/hooks/useChecklistStats";
 import { Button } from "@/components/ui/button";
 import { Flame, Dumbbell, Brain, Cross, ChevronRight, Play, MapPin, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -76,52 +77,54 @@ const DevotionalCard = ({ onMarkRead, read }: { onMarkRead: () => void; read: bo
   </div>
 );
 
-const protocols = [
-  { icon: Dumbbell, label: "Corpo", emoji: "⚡" },
-  { icon: Brain, label: "Mente", emoji: "🧠" },
-  { icon: Cross, label: "Espírito", emoji: "✝️" },
+const protocolsMeta = [
+  { key: "corpo" as const, label: "Corpo", emoji: "⚡" },
+  { key: "mente" as const, label: "Mente", emoji: "🧠" },
+  { key: "espirito" as const, label: "Espírito", emoji: "✝️" },
 ];
 
-const ChecklistSummary = () => (
-  <div>
-    <div className="flex items-center justify-between mb-3">
-      <p className="font-mono text-xs text-primary uppercase tracking-wider">Checklist diário</p>
-      <Link
-        to="/checklist"
-        className="font-mono text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
-      >
-        Ver tudo <ChevronRight className="h-3 w-3" />
-      </Link>
-    </div>
-    <div className="grid grid-cols-3 gap-3">
-      {protocols.map((p) => {
-        const done = 0;
-        const total = 3;
-        return (
-          <div
-            key={p.label}
-            className="bg-background-tertiary rounded-lg border border-primary/15 p-4 text-center"
-          >
-            <span className="text-lg mb-1 block">{p.emoji}</span>
-            <p className="font-mono text-xs text-muted-foreground uppercase tracking-wider mb-2">
-              {p.label}
-            </p>
-            <p className="font-display text-xl text-foreground">
-              {done}<span className="text-muted-foreground">/{total}</span>
-            </p>
-            {/* Progress bar */}
-            <div className="h-1 bg-primary/15 rounded-full mt-2 overflow-hidden">
-              <div
-                className="h-full bg-primary rounded-full transition-all duration-500"
-                style={{ width: `${(done / total) * 100}%` }}
-              />
+const ChecklistSummary = () => {
+  const { stats } = useChecklistStats();
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <p className="font-mono text-xs text-primary uppercase tracking-wider">Checklist diário</p>
+        <Link
+          to="/checklist"
+          className="font-mono text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+        >
+          Ver tudo <ChevronRight className="h-3 w-3" />
+        </Link>
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        {protocolsMeta.map((p) => {
+          const { done, total } = stats[p.key];
+          return (
+            <div
+              key={p.key}
+              className="bg-background-tertiary rounded-lg border border-primary/15 p-4 text-center"
+            >
+              <span className="text-lg mb-1 block">{p.emoji}</span>
+              <p className="font-mono text-xs text-muted-foreground uppercase tracking-wider mb-2">
+                {p.label}
+              </p>
+              <p className="font-display text-xl text-foreground">
+                {done}<span className="text-muted-foreground">/{total}</span>
+              </p>
+              <div className="h-1 bg-primary/15 rounded-full mt-2 overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full transition-all duration-500"
+                  style={{ width: `${(done / total) * 100}%` }}
+                />
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const TodayWorkout = () => {
   const navigate = useNavigate();
