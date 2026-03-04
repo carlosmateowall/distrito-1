@@ -78,3 +78,20 @@
   pointer-events: none;
   opacity: 0.02;
 }
+
+/* Gold shimmer skeleton */
+@keyframes shimmer-gold {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-gold {
+  background: linear-gradient(
+    90deg,
+    hsl(0 0% 8.6%) 0%,
+    hsl(42 50% 54% / 0.08) 50%,
+    hsl(0 0% 8.6%) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-gold 1.5s ease-in-out infinite;
+}

@@ -9,6 +9,7 @@ const navLinks = [
   { to: "/agenda", label: "Agenda" },
   { to: "/checklist", label: "Checklist" },
   { to: "/comunidade", label: "Comunidade" },
+  { to: "/perfil", label: "Perfil" },
 ];
 
 const Navbar = () => {

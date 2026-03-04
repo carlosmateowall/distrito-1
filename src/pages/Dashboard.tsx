@@ -238,6 +238,13 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <NextEvent />
       </div>
+
+      {/* Manifesto */}
+      <div className="text-center py-8 border-t border-primary/10 mt-4">
+        <p className="font-display text-xl md:text-2xl text-primary tracking-wider leading-relaxed max-w-2xl mx-auto">
+          "O 1% NÃO É SOBRE SER MELHOR QUE OS OUTROS. É SOBRE SER 1% MELHOR QUE VOCÊ MESMO, TODO DIA, SEM EXCEÇÃO."
+        </p>
+      </div>
     </div>
   );
 };

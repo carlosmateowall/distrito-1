@@ -18,6 +18,7 @@ import Agenda from "@/pages/Agenda";
 import EventoDetalhe from "@/pages/EventoDetalhe";
 import Checklist from "@/pages/Checklist";
 import Comunidade from "@/pages/Comunidade";
+import Perfil from "@/pages/Perfil";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/agenda/:id" element={<EventoDetalhe />} />
               <Route path="/checklist" element={<Checklist />} />
               <Route path="/comunidade" element={<Comunidade />} />
+              <Route path="/perfil" element={<Perfil />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
