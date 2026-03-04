@@ -55,6 +55,93 @@ export type Database = {
           },
         ]
       }
+      event_confirmations: {
+        Row: {
+          confirmed_at: string
+          event_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          confirmed_at?: string
+          event_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          confirmed_at?: string
+          event_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_confirmations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_confirmations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string
+          datetime: string
+          description: string
+          id: string
+          is_public: boolean
+          location_address: string
+          location_lat: number | null
+          location_lng: number | null
+          location_name: string
+          max_capacity: number | null
+          title: string
+          type: string
+          whatsapp_link: string | null
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string
+          datetime: string
+          description?: string
+          id?: string
+          is_public?: boolean
+          location_address?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          location_name?: string
+          max_capacity?: number | null
+          title: string
+          type: string
+          whatsapp_link?: string | null
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string
+          datetime?: string
+          description?: string
+          id?: string
+          is_public?: boolean
+          location_address?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          location_name?: string
+          max_capacity?: number | null
+          title?: string
+          type?: string
+          whatsapp_link?: string | null
+        }
+        Relationships: []
+      }
       exercises: {
         Row: {
           completed: boolean
