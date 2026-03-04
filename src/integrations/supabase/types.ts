@@ -14,7 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          cidade: string | null
+          created_at: string
+          dias_treino: number | null
+          email: string
+          equipamento: string | null
+          id: string
+          nivel: string | null
+          nome: string
+          objetivo: string | null
+          onboarding_complete: boolean
+          restricoes_alimentares: string | null
+          streak_atual: number
+          streak_maximo: number
+        }
+        Insert: {
+          cidade?: string | null
+          created_at?: string
+          dias_treino?: number | null
+          email?: string
+          equipamento?: string | null
+          id: string
+          nivel?: string | null
+          nome?: string
+          objetivo?: string | null
+          onboarding_complete?: boolean
+          restricoes_alimentares?: string | null
+          streak_atual?: number
+          streak_maximo?: number
+        }
+        Update: {
+          cidade?: string | null
+          created_at?: string
+          dias_treino?: number | null
+          email?: string
+          equipamento?: string | null
+          id?: string
+          nivel?: string | null
+          nome?: string
+          objetivo?: string | null
+          onboarding_complete?: boolean
+          restricoes_alimentares?: string | null
+          streak_atual?: number
+          streak_maximo?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
