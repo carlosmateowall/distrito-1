@@ -37,7 +37,7 @@ const formatDate = () => {
 const DayHeader = ({ nome, streak }: { nome: string; streak: number }) => (
   <div className="mb-8">
     <h1 className="font-display text-4xl md:text-5xl text-primary tracking-wider leading-none">
-      {getGreeting()}, {nome.toUpperCase() || "GUERREIRO"}
+      {getGreeting()}, {nome.split(" ")[0].toUpperCase() || "GUERREIRO"}
     </h1>
     <p className="font-mono text-xs text-muted-foreground uppercase tracking-wider mt-2 capitalize">
       {formatDate()}
@@ -99,31 +99,31 @@ const ChecklistSummary = () => {
           Ver tudo <ChevronRight className="h-3 w-3" />
         </Link>
       </div>
-      <div className="grid grid-cols-3 gap-3">
-        {protocolsMeta.map((p) => {
-          const { done, total } = stats[p.key];
-          return (
-            <div
-              key={p.key}
-              className="bg-background-tertiary rounded-lg border border-primary/15 p-4 text-center"
-            >
-              <span className="text-lg mb-1 block">{p.emoji}</span>
-              <p className="font-mono text-xs text-muted-foreground uppercase tracking-wider mb-2">
-                {p.label}
-              </p>
-              <p className="font-display text-xl text-foreground">
-                {done}<span className="text-muted-foreground">/{total}</span>
-              </p>
-              <div className="h-1 bg-primary/15 rounded-full mt-2 overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{ width: `${(done / total) * 100}%` }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
+       <div className="grid grid-cols-3 gap-3">
+         {protocolsMeta.map((p) => {
+           const { done, total } = stats[p.key];
+           return (
+             <div
+               key={p.key}
+               className="bg-background-tertiary rounded-lg border border-primary/15 p-4 text-center"
+             >
+               <span className="text-lg mb-1 block text-primary">{p.emoji}</span>
+               <p className="font-mono text-xs text-muted-foreground uppercase tracking-wider mb-2">
+                 {p.label}
+               </p>
+               <p className="font-display text-xl text-foreground">
+                 {done}<span className="text-muted-foreground">/{total}</span>
+               </p>
+               <div className="h-1 bg-primary/15 rounded-full mt-2 overflow-hidden">
+                 <div
+                   className="h-full bg-primary rounded-full transition-all duration-500"
+                   style={{ width: `${(done / total) * 100}%` }}
+                 />
+               </div>
+             </div>
+           );
+         })}
+       </div>
     </div>
   );
 };
