@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
+import { DistritoLogo } from "@/components/DistritoLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut } from "lucide-react";
 
@@ -22,8 +23,9 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 h-14 flex items-center justify-between px-6 border-b border-primary/15 bg-background/80 backdrop-blur-xl">
-      <Link to="/dashboard" className="font-display text-2xl text-primary tracking-widest">
-        DISTRITO 1%
+      <Link to="/dashboard" className="flex items-center gap-3 font-display text-2xl text-primary tracking-widest hover:opacity-80 transition-opacity">
+        <DistritoLogo size={24} className="text-primary" />
+        <span>DISTRITO 1%</span>
       </Link>
 
       <div className="hidden md:flex items-center gap-6">
