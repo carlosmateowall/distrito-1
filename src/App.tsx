@@ -19,6 +19,7 @@ import EventoDetalhe from "@/pages/EventoDetalhe";
 import Checklist from "@/pages/Checklist";
 import Comunidade from "@/pages/Comunidade";
 import Perfil from "@/pages/Perfil";
+import Admin from "@/pages/Admin";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/checklist" element={<Checklist />} />
               <Route path="/comunidade" element={<Comunidade />} />
               <Route path="/perfil" element={<Perfil />} />
+              <Route path="/admin" element={<Admin />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
