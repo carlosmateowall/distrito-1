@@ -198,8 +198,11 @@ const Dieta = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <span className="font-display text-2xl text-primary animate-pulse tracking-wider">CARREGANDO...</span>
+      <div className="space-y-6 py-4">
+        <div className="skeleton-gold h-8 w-32 rounded" />
+        <div className="flex gap-1.5">{Array.from({length:7}).map((_,i) => <div key={i} className="skeleton-gold h-9 w-12 rounded-lg" />)}</div>
+        <div className="grid grid-cols-4 gap-3">{Array.from({length:4}).map((_,i) => <div key={i} className="skeleton-gold h-20 rounded-lg" />)}</div>
+        <div className="space-y-3">{Array.from({length:3}).map((_,i) => <div key={i} className="skeleton-gold h-32 rounded-lg" />)}</div>
       </div>
     );
   }
@@ -315,9 +318,9 @@ const Dieta = () => {
       <div className="grid grid-cols-4 gap-3">
         {[
           { label: "Calorias", value: dayCalories, unit: "kcal", color: "bg-primary" },
-          { label: "Proteína", value: dayProtein, unit: "g", color: "bg-blue-400" },
-          { label: "Carbs", value: dayCarbs, unit: "g", color: "bg-amber-400" },
-          { label: "Gordura", value: dayFat, unit: "g", color: "bg-rose-400" },
+          { label: "Proteína", value: dayProtein, unit: "g", color: "bg-primary/70" },
+          { label: "Carbs", value: dayCarbs, unit: "g", color: "bg-primary/50" },
+          { label: "Gordura", value: dayFat, unit: "g", color: "bg-primary/30" },
         ].map((macro) => (
           <div key={macro.label} className="bg-background-tertiary border border-primary/15 rounded-lg p-3 text-center">
             <p className="font-mono text-xs text-muted-foreground uppercase tracking-wider mb-1">{macro.label}</p>

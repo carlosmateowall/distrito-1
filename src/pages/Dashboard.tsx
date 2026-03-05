@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useChecklistStats } from "@/hooks/useChecklistStats";
 import { Button } from "@/components/ui/button";
-import { Flame, Dumbbell, Brain, Cross, ChevronRight, Play, MapPin, Calendar } from "lucide-react";
+import { Flame, ChevronRight, Play, MapPin, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Leaderboard from "@/components/Leaderboard";
 import ProfileStats from "@/components/ProfileStats";
+import { getWeekNumber, type WorkoutRow } from "@/lib/workout-utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Profile {
   nome: string;
@@ -130,29 +132,76 @@ const ChecklistSummary = () => {
 
 const TodayWorkout = () => {
   const navigate = useNavigate();
-  const workoutName = "PEITO + TRÍCEPS";
-  const status = "pendente" as "pendente" | "concluido" | "descanso";
+  const { user } = useAuth();
+  const [workout, setWorkout] = useState<WorkoutRow | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const statusConfig = {
-    pendente: { label: "Pendente", color: "text-primary" },
-    concluido: { label: "Concluído ✓", color: "text-green-400" },
-    descanso: { label: "Dia de descanso", color: "text-muted-foreground" },
-  };
+  useEffect(() => {
+    if (!user) return;
+    const today = new Date().getDay();
+    const week = getWeekNumber();
+
+    supabase
+      .from("workouts")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("week_number", week)
+      .eq("day_of_week", today)
+      .maybeSingle()
+      .then(({ data }) => {
+        setWorkout(data as WorkoutRow | null);
+        setLoading(false);
+      });
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="bg-background-tertiary rounded-lg border border-primary/15 p-5 space-y-3">
+        <div className="skeleton-gold h-3 w-24 rounded" />
+        <div className="skeleton-gold h-6 w-40 rounded" />
+        <div className="skeleton-gold h-3 w-20 rounded" />
+      </div>
+    );
+  }
+
+  if (!workout) {
+    return (
+      <div className="bg-background-tertiary rounded-lg border border-primary/15 p-5">
+        <p className="font-mono text-xs text-primary uppercase tracking-wider mb-3">Treino de hoje</p>
+        <h3 className="font-display text-2xl text-foreground tracking-wider mb-1">SEM TREINO</h3>
+        <p className="font-mono text-xs text-muted-foreground uppercase tracking-wider mb-4">
+          Nenhum treino gerado para hoje
+        </p>
+        <Button
+          onClick={() => navigate("/treino")}
+          variant="outline"
+          size="sm"
+          className="font-mono text-xs uppercase tracking-wider border-primary/30 text-primary hover:bg-primary/10"
+        >
+          Ir para treinos
+        </Button>
+      </div>
+    );
+  }
+
+  const isDescanso = workout.status === "descanso";
+  const isDone = workout.status === "concluido";
 
   return (
     <div className="bg-background-tertiary rounded-lg border border-primary/15 p-5">
-      <p className="font-mono text-xs text-primary uppercase tracking-wider mb-3">
-        Treino de hoje
-      </p>
+      <p className="font-mono text-xs text-primary uppercase tracking-wider mb-3">Treino de hoje</p>
       <h3 className="font-display text-2xl text-foreground tracking-wider mb-1">
-        {status === "descanso" ? "DESCANSO" : workoutName}
+        {isDescanso ? "DESCANSO" : workout.day_name.toUpperCase()}
       </h3>
-      <p className={cn("font-mono text-xs uppercase tracking-wider mb-4", statusConfig[status].color)}>
-        {statusConfig[status].label}
+      <p className={cn(
+        "font-mono text-xs uppercase tracking-wider mb-4",
+        isDone ? "text-primary" : isDescanso ? "text-muted-foreground" : "text-primary"
+      )}>
+        {isDone ? "Concluído ✓" : isDescanso ? "Dia de descanso" : "Pendente"}
       </p>
-      {status === "pendente" && (
+      {!isDescanso && !isDone && (
         <Button
-          onClick={() => navigate("/treino")}
+          onClick={() => navigate(`/treino/${workout.id}`)}
           className="bg-primary text-primary-foreground hover:bg-primary-light font-display text-base tracking-wider"
         >
           <Play className="h-4 w-4 mr-1" />
@@ -163,32 +212,74 @@ const TodayWorkout = () => {
   );
 };
 
-const NextEvent = () => (
-  <div className="bg-background-tertiary rounded-lg border border-primary/15 p-5">
-    <p className="font-mono text-xs text-primary uppercase tracking-wider mb-3">
-      Próximo evento
-    </p>
-    <h3 className="font-display text-xl text-foreground tracking-wider mb-2">
-      MEETUP DISTRITO 1%
-    </h3>
-    <div className="flex items-center gap-2 text-muted-foreground text-xs font-mono mb-1">
-      <Calendar className="h-3 w-3" />
-      <span>Sábado, 15 Mar — 10:00</span>
+interface EventRow {
+  id: string;
+  title: string;
+  datetime: string;
+  location_name: string;
+}
+
+const NextEvent = () => {
+  const [event, setEvent] = useState<EventRow | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("events")
+      .select("id, title, datetime, location_name")
+      .gte("datetime", new Date().toISOString())
+      .order("datetime", { ascending: true })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        setEvent(data as EventRow | null);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-background-tertiary rounded-lg border border-primary/15 p-5 space-y-3">
+        <div className="skeleton-gold h-3 w-24 rounded" />
+        <div className="skeleton-gold h-5 w-48 rounded" />
+        <div className="skeleton-gold h-3 w-32 rounded" />
+      </div>
+    );
+  }
+
+  if (!event) return null;
+
+  const dt = new Date(event.datetime);
+
+  return (
+    <div className="bg-background-tertiary rounded-lg border border-primary/15 p-5">
+      <p className="font-mono text-xs text-primary uppercase tracking-wider mb-3">Próximo evento</p>
+      <h3 className="font-display text-xl text-foreground tracking-wider mb-2">
+        {event.title.toUpperCase()}
+      </h3>
+      <div className="flex items-center gap-2 text-muted-foreground text-xs font-mono mb-1">
+        <Calendar className="h-3 w-3" />
+        <span>
+          {dt.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "short" })} — {dt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+        </span>
+      </div>
+      {event.location_name && (
+        <div className="flex items-center gap-2 text-muted-foreground text-xs font-mono mb-4">
+          <MapPin className="h-3 w-3" />
+          <span>{event.location_name}</span>
+        </div>
+      )}
+      <Button
+        variant="outline"
+        size="sm"
+        className="font-mono text-xs uppercase tracking-wider border-primary/30 text-primary hover:bg-primary/10"
+        asChild
+      >
+        <Link to={`/agenda/${event.id}`}>Ver detalhes</Link>
+      </Button>
     </div>
-    <div className="flex items-center gap-2 text-muted-foreground text-xs font-mono mb-4">
-      <MapPin className="h-3 w-3" />
-      <span>São Paulo, SP</span>
-    </div>
-    <Button
-      variant="outline"
-      size="sm"
-      className="font-mono text-xs uppercase tracking-wider border-primary/30 text-primary hover:bg-primary/10"
-      asChild
-    >
-      <Link to="/agenda">Ver detalhes</Link>
-    </Button>
-  </div>
-);
+  );
+};
 
 // --- Main Dashboard ---
 
@@ -199,6 +290,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!user) return;
+
+    // Load profile
     supabase
       .from("profiles")
       .select("nome, streak_atual, objetivo")
@@ -207,14 +300,69 @@ const Dashboard = () => {
       .then(({ data }) => {
         if (data) setProfile(data as Profile);
       });
+
+    // Check if devotional already read today
+    const today = new Date().toISOString().split("T")[0];
+    supabase
+      .from("daily_checklist")
+      .select("completed")
+      .eq("user_id", user.id)
+      .eq("date", today)
+      .eq("item_key", "devocional_lido")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.completed) setDevotionalRead(true);
+      });
   }, [user]);
+
+  const handleDevotionalRead = async () => {
+    if (!user) return;
+    setDevotionalRead(true);
+
+    const today = new Date().toISOString().split("T")[0];
+    // Upsert the checklist item
+    const { data: existing } = await supabase
+      .from("daily_checklist")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("date", today)
+      .eq("item_key", "devocional_lido")
+      .maybeSingle();
+
+    if (existing) {
+      await supabase
+        .from("daily_checklist")
+        .update({ completed: true })
+        .eq("id", existing.id);
+    } else {
+      await supabase
+        .from("daily_checklist")
+        .insert({
+          user_id: user.id,
+          date: today,
+          protocol: "espirito",
+          item_key: "devocional_lido",
+          completed: true,
+        });
+    }
+  };
 
   if (!profile) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <span className="font-display text-2xl text-primary animate-pulse tracking-wider">
-          CARREGANDO...
-        </span>
+      <div className="space-y-6 py-4">
+        <div className="space-y-3">
+          <div className="skeleton-gold h-10 w-72 rounded" />
+          <div className="skeleton-gold h-4 w-48 rounded" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="skeleton-gold h-40 rounded-lg" />
+          <div className="skeleton-gold h-40 rounded-lg" />
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="skeleton-gold h-28 rounded-lg" />
+          <div className="skeleton-gold h-28 rounded-lg" />
+          <div className="skeleton-gold h-28 rounded-lg" />
+        </div>
       </div>
     );
   }
@@ -224,7 +372,7 @@ const Dashboard = () => {
       <DayHeader nome={profile.nome} streak={profile.streak_atual} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DevotionalCard onMarkRead={() => setDevotionalRead(true)} read={devotionalRead} />
+        <DevotionalCard onMarkRead={handleDevotionalRead} read={devotionalRead} />
         <TodayWorkout />
       </div>
 
