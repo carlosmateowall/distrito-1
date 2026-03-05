@@ -219,8 +219,15 @@ const Checklist = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <span className="font-display text-2xl text-primary animate-pulse tracking-wider">CARREGANDO...</span>
+      <div className="space-y-6 py-4">
+        <div className="skeleton-gold h-8 w-48 rounded" />
+        <div className="skeleton-gold h-2 rounded-full" />
+        {Array.from({length:3}).map((_,i) => (
+          <div key={i} className="space-y-2">
+            <div className="skeleton-gold h-4 w-40 rounded" />
+            {Array.from({length:3}).map((_,j) => <div key={j} className="skeleton-gold h-14 rounded-lg" />)}
+          </div>
+        ))}
       </div>
     );
   }

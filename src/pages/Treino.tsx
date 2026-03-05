@@ -64,8 +64,10 @@ const Treino = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <span className="font-display text-2xl text-primary animate-pulse tracking-wider">CARREGANDO...</span>
+      <div className="space-y-6 py-4">
+        <div className="skeleton-gold h-8 w-32 rounded" />
+        <div className="skeleton-gold h-2 rounded-full" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">{Array.from({length:6}).map((_,i) => <div key={i} className="skeleton-gold h-28 rounded-lg" />)}</div>
       </div>
     );
   }

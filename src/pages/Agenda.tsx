@@ -8,11 +8,11 @@ import { Calendar, MapPin, Users, Check, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  treino_grupo: { label: "Treino em Grupo", color: "text-green-400", bg: "bg-green-400/10 border-green-400/30" },
-  masterclass: { label: "Masterclass", color: "text-primary", bg: "bg-primary/10 border-primary/30" },
-  retiro: { label: "Retiro", color: "text-purple-400", bg: "bg-purple-400/10 border-purple-400/30" },
+  treino_grupo: { label: "Treino em Grupo", color: "text-primary", bg: "bg-primary/10 border-primary/30" },
+  masterclass: { label: "Masterclass", color: "text-primary-light", bg: "bg-primary-light/10 border-primary-light/30" },
+  retiro: { label: "Retiro", color: "text-primary", bg: "bg-primary/15 border-primary/40" },
   devocional: { label: "Devocional", color: "text-primary-light", bg: "bg-primary-light/10 border-primary-light/30" },
-  online: { label: "Online", color: "text-blue-400", bg: "bg-blue-400/10 border-blue-400/30" },
+  online: { label: "Online", color: "text-muted-foreground", bg: "bg-muted/30 border-muted-foreground/20" },
 };
 
 const ALL_TYPES = Object.keys(TYPE_CONFIG);
@@ -108,8 +108,10 @@ const Agenda = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <span className="font-display text-2xl text-primary animate-pulse tracking-wider">CARREGANDO...</span>
+      <div className="space-y-6 py-4">
+        <div className="skeleton-gold h-8 w-32 rounded" />
+        <div className="flex gap-2">{Array.from({length:5}).map((_,i) => <div key={i} className="skeleton-gold h-8 w-24 rounded-md" />)}</div>
+        <div className="space-y-3">{Array.from({length:3}).map((_,i) => <div key={i} className="skeleton-gold h-32 rounded-lg" />)}</div>
       </div>
     );
   }

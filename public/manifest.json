@@ -1,0 +1,16 @@
+{
+  "name": "Distrito 1%",
+  "short_name": "D1%",
+  "description": "Elite Performance — Corpo, Mente e Espírito",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#C9A84C",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
