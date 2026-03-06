@@ -1,76 +1,62 @@
 
 
-## Análise: O que falta do spec vs. o que já está implementado
+## GymRats-style Challenge System
 
-### Implementado (MVP completo)
+Build a challenge system where members can create/join time-bound fitness challenges, post workout proofs, and compete on a leaderboard -- all natively within the app.
 
-| Seção | Status |
-|-------|--------|
-| **01 — Treino** | Dashboard semanal, execução com timer, histórico com PRs e calendário, geração por IA |
-| **02 — Dieta** | Plano alimentar por IA, 6 refeições/dia, macros, marcar refeições, disclaimer legal |
-| **03 — Agenda** | Lista de eventos, filtro por tipo, confirmação de presença, detalhe com Google Calendar/Maps/WhatsApp |
-| **04 — Checklist** | 3 protocolos (9 itens), streak, confetti, badges, ranking semanal |
-| **05 — Comunidade** | Ranking, membros com filtro por cidade, grupos WhatsApp (placeholder), feed de vitórias |
-| **Perfil** | Avatar, streak, badges, stats, editar perfil, logout |
-| **Admin** | Criar/deletar eventos, acesso restrito por role |
-| **Onboarding** | Quiz de 4 passos + cidade + restrições |
-| **Gamificação** | Streak diário, badges (7/21/30/60/100), ranking semanal, celebração visual |
+### Database Schema
 
----
+**New tables:**
 
-### O que falta ou está parcialmente implementado
+1. **`challenges`** -- stores challenge metadata
+   - `id`, `title`, `description`, `created_by` (user_id), `start_date`, `end_date`, `invite_code` (unique 6-char), `status` (active/completed), `created_at`
 
-**1. Dashboard — Treino de Hoje (dados reais)**
-O componente `TodayWorkout` usa dados hardcoded ("PEITO + TRÍCEPS", status "pendente"). Deveria buscar o treino real do dia atual no banco.
+2. **`challenge_members`** -- who joined which challenge
+   - `id`, `challenge_id`, `user_id`, `joined_at`
 
-**2. Dashboard — Próximo Evento (dados reais)**
-O componente `NextEvent` é totalmente estático (hardcoded "MEETUP DISTRITO 1%"). Deveria buscar o próximo evento real do Supabase.
+3. **`challenge_posts`** -- workout proofs posted to a challenge
+   - `id`, `challenge_id`, `user_id`, `title`, `description`, `photo_url` (optional), `points` (default 1), `created_at`
 
-**3. Dashboard — Devocional do Dia**
-O devocional é estático (sempre "Filipenses 4:13"). O spec menciona "card de devocional da home — marca ao abrir" vinculado ao checklist. A marcação como "lido" não persiste no banco e não atualiza o item `devocional_lido` do checklist.
+**Storage:** Create a `challenge-photos` bucket for workout proof images.
 
-**4. Dieta — Macro bars com cores fora da paleta**
-As barras de Proteína (blue-400), Carbs (amber-400) e Gordura (rose-400) usam cores fora da paleta dourada. Segundo a diretriz visual, tudo deveria ser em tons de dourado/neutro.
+**RLS:** Users can read challenges they belong to, insert own posts, and creators can manage their challenges.
 
-**5. Agenda — Tipo badges com cores fora da paleta**
-`TYPE_CONFIG` usa verde, roxo e azul para os tipos de eventos. Mesma questão de paleta.
+### New Pages & Components
 
-**6. Treino — Sem opção de regenerar**
-Não há botão para regenerar o treino da semana caso o usuário queira um novo plano.
+1. **`/desafios`** -- Main challenges page with tabs:
+   - **Meus Desafios**: list of active challenges the user is in, with progress bars
+   - **Criar Desafio**: form to create a new challenge (title, description, dates)
+   - **Entrar por Código**: input to join via invite code
 
-**7. Checklist — Deveres customizáveis (V2)**
-O spec menciona que admin pode adicionar deveres extras e usuário pode adicionar 1 pessoal. Não implementado (aceitável como V2).
+2. **`/desafios/:id`** -- Challenge detail page:
+   - Challenge header (title, dates, member count, invite code to share)
+   - Leaderboard ranked by total posts/points
+   - Feed of workout posts (newest first) with member name, title, photo, timestamp
+   - FAB button to post a new workout proof (title + optional photo)
 
-**8. Loja (Seção 06) — Não implementada**
-Marcada como V2 no spec, então aceitável não ter.
+3. **Components:**
+   - `ChallengeCard` -- card preview for the challenge list
+   - `ChallengeLeaderboard` -- ranked member list within a challenge
+   - `ChallengePostForm` -- dialog to submit a workout proof
+   - `ChallengeFeed` -- scrollable feed of posts
 
-**9. PWA / manifest.json**
-O spec pede que funcione como PWA. Não há `manifest.json` nem service worker.
+### Navigation
 
-**10. Push Notifications**
-Mencionado no spec para eventos (24h e 1h antes) e checklist (6h). Não implementado.
+- Add "Desafios" tab to `BottomNav` with a `Swords` icon
+- Add route `/desafios` and `/desafios/:id` to `App.tsx`
 
-**11. Skeleton loaders com shimmer dourado**
-A classe `skeleton-gold` foi criada no CSS mas a maioria das páginas usa texto "CARREGANDO..." em vez de skeletons. Apenas Admin, Comunidade e Perfil usam skeletons.
+### Key Behaviors
 
-**12. Nome no cadastro**
-A página de Login/Cadastro deveria pedir o nome do usuário no signup para que o perfil tenha um nome real desde o início. Atualmente o `handle_new_user` trigger só salva email.
+- Creating a challenge generates a random 6-character invite code
+- Share code via a copy button; joining checks the code and adds the user to `challenge_members`
+- Each workout post = 1 point; leaderboard sorts by total points
+- Challenge auto-shows as "completed" after `end_date`
+- Photo upload is optional (uses Supabase Storage)
 
----
+### Files to Create/Edit
 
-### Resumo de prioridades para completar o MVP
-
-| Prioridade | Item |
-|-----------|------|
-| Alta | Dashboard: buscar treino de hoje e próximo evento reais do banco |
-| Alta | Dashboard: devocional marcar como lido → persistir no checklist |
-| Alta | Cadastro: pedir nome no signup |
-| Média | Corrigir cores fora da paleta (dieta macros, agenda type badges) |
-| Média | Skeleton loaders em todas as páginas (trocar "CARREGANDO..." por skeleton-gold) |
-| Média | PWA manifest.json + ícones |
-| Baixa | Botão regenerar treino |
-| Baixa | Push notifications (requer serviço externo) |
-| V2 | Loja, deveres customizáveis, perfil público compartilhável |
-
-Quer que eu implemente os itens de alta e média prioridade?
+- **Create:** `src/pages/Desafios.tsx`, `src/pages/DesafioDetalhe.tsx`, `src/components/ChallengeCard.tsx`, `src/components/ChallengePostForm.tsx`
+- **Edit:** `src/App.tsx` (add routes), `src/components/BottomNav.tsx` (add nav item)
+- **Migration:** Create `challenges`, `challenge_members`, `challenge_posts` tables with RLS
+- **Storage:** Create `challenge-photos` bucket
 
