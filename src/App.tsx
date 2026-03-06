@@ -18,6 +18,8 @@ import Agenda from "@/pages/Agenda";
 import EventoDetalhe from "@/pages/EventoDetalhe";
 import Checklist from "@/pages/Checklist";
 import Comunidade from "@/pages/Comunidade";
+import Desafios from "@/pages/Desafios";
+import DesafioDetalhe from "@/pages/DesafioDetalhe";
 import Perfil from "@/pages/Perfil";
 import Admin from "@/pages/Admin";
 import NotFound from "@/pages/NotFound";
@@ -46,6 +48,8 @@ const App = () => (
               <Route path="/agenda/:id" element={<EventoDetalhe />} />
               <Route path="/checklist" element={<Checklist />} />
               <Route path="/comunidade" element={<Comunidade />} />
+              <Route path="/desafios" element={<Desafios />} />
+              <Route path="/desafios/:id" element={<DesafioDetalhe />} />
               <Route path="/perfil" element={<Perfil />} />
               <Route path="/admin" element={<Admin />} />
             </Route>
