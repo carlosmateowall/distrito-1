@@ -1,12 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Dumbbell, CheckSquare, Calendar, User } from "lucide-react";
+import { LayoutDashboard, Dumbbell, CheckSquare, Swords, User } from "lucide-react";
 
 const tabs = [
   { to: "/dashboard", label: "Home", icon: LayoutDashboard },
   { to: "/treino", label: "Treino", icon: Dumbbell },
   { to: "/checklist", label: "Check", icon: CheckSquare },
-  { to: "/agenda", label: "Agenda", icon: Calendar },
+  { to: "/desafios", label: "Desafios", icon: Swords },
   { to: "/perfil", label: "Perfil", icon: User },
 ];
 
